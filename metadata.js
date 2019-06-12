@@ -4,6 +4,8 @@ export default {
     "pages": [
       {
         "id": "ucd",
+        "prev_page" : null,
+        "next_page" : "u16b",
         "name": "1",
         "geometric_bound": [
           0.0,
@@ -67,6 +69,8 @@ export default {
     "pages": [
       {
         "id": "u16b",
+        "prev_page" : "ucd",
+        "next_page" : "u16c",
         "name": "2",
         "geometric_bound": [
           0.0,
@@ -95,6 +99,8 @@ export default {
       },
       {
         "id": "u16c",
+        "prev_page" : "u16b",
+        "next_page" : null,
         "name": "3",
         "geometric_bound": [
           0.0,
