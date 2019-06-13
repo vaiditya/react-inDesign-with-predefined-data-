@@ -214,9 +214,17 @@ export default class ContentEditable extends Component {
 
         this.moveFocus(textNode, 0)
         }else{
-          console.log("selection.anchorOffset11111",selection.anchorOffset)
+          console.log("selection.anchorOffset11111",selection.anchorNode)
           // console.log("create empty span")
 
+          originalEl=selection.anchorNode;
+          console.log("selection.anchorOffset11111",originalEl)
+
+          brElementContainer=originalEl.cloneNode(true)
+          brElement=document.createElement("br")
+          brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
+
+          currentPageEl.insertBefore(brElementContainer,originalEl)
         }
 
       }else{
