@@ -67,6 +67,7 @@ export default class ContentEditable extends Component {
 
   currentCaretPosition = 0;
   previousCaretPosition = 0;
+  prevElement=null;
 
   el = typeof this.props.innerRef === 'function' ? { current: null } : React.createRef();
   getEl = () => (this.props.innerRef && typeof this.props.innerRef !== 'function' ? this.props.innerRef : this.el).current;
@@ -158,9 +159,11 @@ export default class ContentEditable extends Component {
         let brElement=null
         let brElementContainer=null
 
+        if(!selection.anchorNode.isEqualNode(currentPageEl)){
         originalEl=selection.anchorNode.parentNode;
 
         beforeElement=originalEl.cloneNode(true)
+        console.log("originalEl",selection.anchorNode.parentNode)
         // console.log("beforeElementText",beforeElement.innerText.substr(0,selection.anchorOffset))
         beforeElementText=beforeElement.innerText.substr(0,selection.anchorOffset)
         textNode=document.createTextNode(beforeElementText)
@@ -178,12 +181,25 @@ export default class ContentEditable extends Component {
         brElement=document.createElement("br")
         brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
 
-         currentPageEl.insertBefore(beforeElement,originalEl)
+        currentPageEl.insertBefore(beforeElement,originalEl)
         currentPageEl.insertBefore(brElementContainer,originalEl)
         currentPageEl.insertBefore(afterElement,originalEl)
         currentPageEl.removeChild(originalEl)
 
         this.moveFocus(textNode, 0)
+        }else{
+          console.log("******************************")
+          console.log("selection.anchorOffset",selection)
+          console.log("prevElement",this.prevElement)
+          brElementContainer=this.prevElement.cloneNode(true)
+          brElement=document.createElement("br")
+          brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
+
+          currentPageEl.insertBefore(brElementContainer,this.prevElement)
+          
+
+
+        }
         // console.log("selection.anchorOffset",selection.anchorOffset)
       }else if (selection.anchorOffset === 0){
         // console.log("enter pressed")
@@ -231,6 +247,7 @@ export default class ContentEditable extends Component {
         console.log("last case")
         e.preventDefault()
         originalEl=selection.anchorNode.parentNode;
+        this.prevElement=originalEl;
         beforeElement=originalEl.cloneNode(true)
         // console.log("beforeElementText",beforeElement.innerText.substr(0,selection.anchorOffset))
         beforeElementText=beforeElement.innerText
