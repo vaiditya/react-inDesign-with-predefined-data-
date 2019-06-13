@@ -111,7 +111,7 @@ export default class ContentEditable extends Component {
             const previousEditableEl = document.getElementById("editable_ucd")
             console.log("Remove node from child and append it to parent ...!")
             if(currentPageEl.childElementCount === 1) {
-              currentPageEl.innerHTML = "<div><br></div>"
+              currentPageEl.innerHTML = "<span><br></span>"
             } else {
               currentPageEl.removeChild(currentPageEl.firstChild)
             }
@@ -125,7 +125,7 @@ export default class ContentEditable extends Component {
             const currentFirstChildNode = currentPageEl.firstChild
             previousEditableEl.appendChild(currentFirstChildNode)
             if(currentPageEl.childElementCount === 0) {
-              currentPageEl.innerHTML = "<div><br></div>"
+              currentPageEl.innerHTML = "<span><br></span>"
             }
             previousEditableEl.focus()
             this.moveFocus(previousEditableEl, previousEditableEl.childElementCount - 1, true)
@@ -140,10 +140,10 @@ export default class ContentEditable extends Component {
       }
     }
     if (e.keyCode===13){
-    
-      // e.preventDefault()
+      let caretPos=selection.anchorNode.parentNode.clientHeight+selection.anchorNode.parentNode.offsetTop
+      e.preventDefault()
       console.log("selection.anchorNode.parentNode",selection.anchorNode.parentNode)
-      console.log("selection.anchorNode",selection.anchorNode)
+      console.log("selection.anchorNode.clientHeight",selection.anchorNode.parentNode.clientHeight+selection.anchorNode.parentNode.offsetTop)
       console.log("selection.anchorOffset",selection.anchorOffset)
 
       if (selection.anchorOffset > 0 && selection.anchorOffset < selection.anchorNode.parentNode.innerText.length ){
@@ -156,73 +156,103 @@ export default class ContentEditable extends Component {
         let afterElementText=null
         let textNode=null 
         let brElement=null
+        let brElementContainer=null
 
         originalEl=selection.anchorNode.parentNode;
 
         beforeElement=originalEl.cloneNode(true)
-        console.log("beforeElementText",beforeElement.innerText.substr(0,selection.anchorOffset))
+        // console.log("beforeElementText",beforeElement.innerText.substr(0,selection.anchorOffset))
         beforeElementText=beforeElement.innerText.substr(0,selection.anchorOffset)
         textNode=document.createTextNode(beforeElementText)
         beforeElement.replaceChild(textNode,beforeElement.firstChild)
-        console.log("revised beforeElement",beforeElement)
+        // console.log("revised beforeElement",beforeElement)
 
         afterElement=originalEl.cloneNode(true)
-        console.log("afterElementText",afterElement.innerText.substr(selection.anchorOffset))
+        // console.log("afterElementText",afterElement.innerText.substr(selection.anchorOffset))
         afterElementText=afterElement.innerText.substr(selection.anchorOffset)
         textNode=document.createTextNode(afterElementText)
         afterElement.replaceChild(textNode,afterElement.firstChild)
-        console.log("revised afterElement",afterElement)
+        // console.log("revised afterElement",afterElement)
 
-        currentPageEl.insertBefore(beforeElement,originalEl)
+        brElementContainer=originalEl.cloneNode(true)
+        brElement=document.createElement("br")
+        brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
+
+         currentPageEl.insertBefore(beforeElement,originalEl)
+        currentPageEl.insertBefore(brElementContainer,originalEl)
         currentPageEl.insertBefore(afterElement,originalEl)
         currentPageEl.removeChild(originalEl)
 
         this.moveFocus(textNode, 0)
-        console.log("selection.anchorOffset",selection.anchorOffset)
+        // console.log("selection.anchorOffset",selection.anchorOffset)
       }else if (selection.anchorOffset === 0){
-      // e.preventDefault()
+        // console.log("enter pressed")
+      e.preventDefault()
 
-        console.log("selection.anchorNode.parentNode",selection.anchorNode.parentNode)
-        console.log("selection.anchorNode",selection.anchorNode)
-        console.log("from start")
+        // console.log("selection.anchorNode.parentNode",selection.anchorNode.parentNode)
+        // console.log("selection.anchorNode",selection.anchorNode)
+        // console.log("from start")
 
         originalEl=selection.anchorNode.parentNode;
-
+        // console.log("originalEl",originalEl)
         if(!originalEl.isEqualNode(currentPageEl)){
         
         e.preventDefault()
-        beforeElement=originalEl.cloneNode(true)
-        textNode=document.createElement("br")
-        beforeElement.replaceChild(textNode,beforeElement.firstChild)
+        brElementContainer=originalEl.cloneNode(true)
+        brElement=document.createElement("br")
+        brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
 
         afterElement=originalEl.cloneNode(true)
-        console.log("afterElementText",afterElement.innerText.substr(selection.anchorOffset))
+        // console.log("afterElementText",afterElement.innerText.substr(selection.anchorOffset))
         afterElementText=afterElement.innerText
         textNode=document.createTextNode(afterElementText)
         afterElement.replaceChild(textNode,afterElement.firstChild)
 
-        currentPageEl.insertBefore(beforeElement,originalEl)
+        currentPageEl.insertBefore(brElementContainer,originalEl)
         currentPageEl.insertBefore(afterElement,originalEl)
         currentPageEl.removeChild(originalEl)
 
         this.moveFocus(textNode, 0)
         }else{
-          console.log("create empty div")
+          console.log("selection.anchorOffset11111",selection.anchorOffset)
+          // console.log("create empty span")
+
         }
 
       }else{
         console.log("last case")
-      }
+        e.preventDefault()
+        originalEl=selection.anchorNode.parentNode;
+        beforeElement=originalEl.cloneNode(true)
+        // console.log("beforeElementText",beforeElement.innerText.substr(0,selection.anchorOffset))
+        beforeElementText=beforeElement.innerText
+        textNode=document.createTextNode(beforeElementText)
+        beforeElement.replaceChild(textNode,beforeElement.firstChild)
 
+        brElementContainer=originalEl.cloneNode(true)
+        brElement=document.createElement("br")
+        brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
+
+        currentPageEl.insertBefore(beforeElement,originalEl)
+        currentPageEl.insertBefore(brElementContainer,originalEl)
+        currentPageEl.removeChild(originalEl)
+      }
+      if(caretPos>=currentPageEl.clientHeight && currentPageEl.lastElementChild.offsetHeight + currentPageEl.lastElementChild.offsetTop > currentPageEl.clientHeight){
+        const nextEditableEl = document.getElementById("editable_u16b")
+        nextEditableEl.focus()
+      }
     }
   
 
     if(this.currentCaretPosition !== this.previousCaretPosition) {
+      currentPageEl = this.getEl();
+      console.log("currentEditableElHeight",currentPageEl)
+      console.log("currentEditableElHeight",currentPageEl.lastElementChild.offsetHeight + currentPageEl.lastElementChild.offsetTop)
       const currentPageElHeight = currentPageEl.clientHeight
 
       // Current Editable reference
       const currentEditableEl = document.getElementById(`editable_${this.props.page.id}`)
-      let currentEditableElHeight = currentPageEl.lastChild ? currentPageEl.lastChild.offsetHeight + currentPageEl.lastChild.offsetTop: 0
+      let currentEditableElHeight = currentPageEl.lastChild ? currentPageEl.lastElementChild.offsetHeight + currentPageEl.lastElementChild.offsetTop: 0
      
       // Next Editable reference
       const nextEditableEl = document.getElementById("editable_u16b")
@@ -230,11 +260,13 @@ export default class ContentEditable extends Component {
       
       let currentPageItem = []
       let nextPageItem = []
-
+      
       if(currentEditableElHeight > currentPageElHeight) {
-        console.log("length exceed")
-        let currentEditableElLastChild = currentEditableEl.lastChild
-        let nextEditableElfirstChild = nextEditableEl.firstChild
+        
+        let currentEditableElLastChild = currentEditableEl.lastElementChild
+        let nextEditableElfirstChild = nextEditableEl.firstElementChild
+        console.log("currentEditableElLastChild",currentEditableElLastChild)
+        // console.log("nextEditableElfirstChild",nextEditableElfirstChild)
 
         if(this.currentCaretPosition > currentPageElHeight) {
           console.log("caret length exceed")
@@ -250,15 +282,15 @@ export default class ContentEditable extends Component {
             const nextPageText = nextPageItem.join("")
             
             if(nextEditableElfirstChild.innerHTML === "<br>" && nextEditableEl.childElementCount === 1) {
-              const div = document.createElement("div");
+              const span = document.createElement("span");
               const textNode = document.createTextNode(nextPageText);
-              div.appendChild(textNode)
-              nextEditableEl.replaceChild(div, nextEditableElfirstChild)
+              span.appendChild(textNode)
+              nextEditableEl.replaceChild(span, nextEditableElfirstChild)
             } else {
-              const div = document.createElement("div");
+              const span = document.createElement("span");
               const textNode = document.createTextNode(nextPageText + nextEditableElfirstChild.innerText);
-              div.appendChild(textNode)
-              nextEditableEl.insertBefore(div, nextEditableElfirstChild)
+              span.appendChild(textNode)
+              nextEditableEl.insertBefore(span, nextEditableElfirstChild)
               nextEditableEl.removeChild(nextEditableElfirstChild)
             }
 
@@ -284,7 +316,7 @@ export default class ContentEditable extends Component {
   }
 
   render() {
-    const { tagName ='div', html = "", innerRef, page, style, ...props } = this.props;
+    const { tagName ='span', html = "", innerRef, page, style, ...props } = this.props;
 
     return React.createElement(
       tagName,
@@ -294,11 +326,20 @@ export default class ContentEditable extends Component {
           innerRef(current)
           this.el.current = current
         } : innerRef || this.el,
-        onClick: this.emitKeyup,
+        // onClick: this.emitKeyup,
         onInput: this.emitKeyup,
         onKeyDown: this.emitKeyup,
         contentEditable: !this.props.disabled,
-        dangerouslySetInnerHTML: { __html:this.props.page.prev_page===null? '<div id=1 style="color:red;">abc</div><div id=2 style="color:green;">adasdasd</div>': html },
+        dangerouslySetInnerHTML: { __html:this.props.page.prev_page===null? ` <span style='font-weight: normal; color:rgb(0, 0, 0); font-family:Montserrat; line-height: 14.4pt; font-size: 12pt; '>What is Lorem Ipsum?</span> 
+  <span style='font-weight: normal; color:rgb(0, 0, 0); font-family:Montserrat; line-height: 14.4pt; font-size: 12pt; '>Lorem Ipsum is simply dummy text of the printing and 
+    typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type 
+    specimen book. It has survived not only five centuries, but also the leap into </span> 
+    <span style='font-weight: normal; color:rgb(0, 0, 0); font-family:Montserrat; line-height: 14.4pt; font-size: 12pt; '>electronic</span> 
+    <span style='font-weight: normal; color:rgb(0, 0, 0); font-family:Montserrat; line-height: 14.4pt; font-size: 12pt; '> typesetting, remaining essentially unchanged. 
+      It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including version</span> 
+      <span style='font-weight: normal; color:rgb(0, 0, 0); font-family:Montserrat; line-height: 14.4pt; font-size: 12pt; '>s</span> 
+      <span style='font-weight: normal; color:rgb(0, 0, 0); font-family:Montserrat; line-height: 14.4pt; font-size: 12pt; '> of Lorem Ipsum.</span>
+    `: html },
         style
       },
     this.props.children);
