@@ -188,14 +188,14 @@ export default class ContentEditable extends Component {
 
         this.moveFocus(textNode, 0)
         }else{
-          console.log("******************************")
-          console.log("selection.anchorOffset",selection)
-          console.log("prevElement",this.prevElement)
-          brElementContainer=this.prevElement.cloneNode(true)
-          brElement=document.createElement("br")
-          brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
+          // console.log("******************************")
+          // console.log("selection.anchorOffset",selection.anchorNode)
+          // console.log("prevElement",this.prevElement)
+          // brElementContainer=this.prevElement.cloneNode(true)
+          // brElement=document.createElement("br")
+          // brElementContainer.replaceChild(brElement,brElementContainer.firstChild)
 
-          currentPageEl.insertBefore(brElementContainer,this.prevElement)
+          // selection.anchorNode.insertBefore(brElementContainer,this.prevElement)
           
 
 
